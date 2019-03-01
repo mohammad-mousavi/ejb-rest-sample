@@ -82,9 +82,7 @@
     <distributionManagement>
         <repository>
             <id>weblogic-mohammad-domain</id>
-            <url>
-                scpexe://192.168.7.191:22/opt/Oracle/Middleware/user_projects/domains/mohammad/servers/AdminServer/upload
-            </url>
+            <url>scp://192.168.0.10:22/home/mohammad/Projects/idea-projects/tosan/upload</url>
         </repository>
     </distributionManagement>
 
@@ -92,8 +90,8 @@
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-beta-6</version>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.12</version>
             </extension>
         </extensions>
 
@@ -126,6 +124,42 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <id>upload-to-myserver</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                        <configuration>
+                            <serverId>weblogic-mohammad-domain</serverId>
+                            <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+                            <url>scp://192.168.0.10/home/mohammad/Projects/idea-projects/tosan/upload</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>update-weblogic-mymodule</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>sshexec</goal>
+                        </goals>
+                        <configuration>
+                            <commands>
+                                <command>touch /home/mohammad/Projects/idea-projects/tosan/upload/ggg</command>
+                            </commands>
+                            <serverId>weblogic-mohammad-domain</serverId>
+                            <url>scp://192.168.0.10</url>
+                            <displayCommandOutputs>true</displayCommandOutputs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
